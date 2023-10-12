@@ -15,6 +15,11 @@ import { LoginPageComponent } from './components/pages/login-page/login-page.com
 import { ReactiveFormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { InputContainerComponent } from './components/partials/input-container/input-container.component';
+import { RegisterPageComponent } from './components/pages/register-page/register-page.component';
+import { TextInputComponent } from './components/partials/text-input/text-input.component';
+import { DefaultButtonComponent } from './components/partials/default-button/default-button.component';
+import { InputValidationComponent } from './components/partials/input-validation/input-validation.component';
 
 
 @NgModule({
@@ -28,7 +33,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     CartPageComponent,
     TitleComponent,
     NotFoundComponent,
-    LoginPageComponent
+    LoginPageComponent,
+    RegisterPageComponent,
+    InputValidationComponent,
+    InputContainerComponent,
+    TextInputComponent,
+    DefaultButtonComponent
   ],
   imports: [
     BrowserModule,

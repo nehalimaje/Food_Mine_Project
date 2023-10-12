@@ -3,7 +3,8 @@ import { BehaviorSubject , Observable, tap } from 'rxjs';
 import { User } from '../share/models/User';
 import { HttpClient } from '@angular/common/http';
 import { IUserLogin } from '../share/interfaces/IUserLogin';
-import { USER_LOGIN_URL } from '../share/constants/urls';
+import { USER_LOGIN_URL, USER_REGISTER_URL } from '../share/constants/urls';
+import { IUserRegister } from '../share/interfaces/IUserRegister';
 import { ToastrService } from 'ngx-toastr';
 
 const USER_KEY = 'User';
@@ -11,6 +12,7 @@ const USER_KEY = 'User';
   providedIn: 'root'
 })
 export class UserService {
+  [x: string]: any;
   private userSubject =
   new BehaviorSubject<User>(this.getUserFromLocalStorage());
   public userObservable:Observable<User>;
@@ -34,6 +36,25 @@ export class UserService {
         }
       })
     );
+  }
+
+  register(userRegiser:IUserRegister): Observable<User>{
+    return this.http.post<User>(USER_REGISTER_URL, userRegiser).pipe(
+      tap({
+        next: (user) => {
+          this.setUserToLocalStorage(user);
+          this.userSubject.next(user);
+          this.toastrService.success(
+            `Welcome to the Foodmine ${user.name}`,
+            'Register Successful'
+          )
+        },
+        error: (errorResponse) => {
+          this.toastrService.error(errorResponse.error,
+            'Register Failed')
+        }
+      })
+    )
   }
 
   logout(){

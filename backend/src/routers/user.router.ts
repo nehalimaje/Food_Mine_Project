@@ -3,8 +3,9 @@ import { sample_users } from "../data";
 import jwt from "jsonwebtoken";
 const router = Router();
 import async_handler from 'express-async-handler';
-import { UserModel } from "../mongoose/user.model";
-
+import { User, UserModel } from "../mongoose/user.model";
+import { HTTP_BAD_REQUEST } from '../constants/http_status';
+import bcrypt from "bcryptjs";
 
 router.get("/seed", async_handler(
     async (req, res) => {
@@ -27,12 +28,37 @@ router.post("/login",async_handler(
         if(user){
           res.send(generateTokenResponse(user));
         }else{
-          res.status(400).send("User name or password is not valid!");
+          res.status(HTTP_BAD_REQUEST).send("Username or password is invalid!");
         }
       
       }
 ));
-  
+
+router.post('/register', async_handler(
+  async (req, res) => {
+    const {name, email, password, address} = req.body;
+    const user = await UserModel.findOne({email});
+    if(user){
+      res.status(HTTP_BAD_REQUEST)
+      .send('User is already exist, please login!');
+      return;
+    }
+
+    const encryptedPassword = await bcrypt.hash(password, 10);
+
+    const newUser:User = {
+      id:'',
+      name,
+      email: email.toLowerCase(),
+      password: encryptedPassword,
+      address,
+      isAdmin: false
+    }
+
+    const dbUser = await UserModel.create(newUser);
+    res.send(generateTokenResponse(dbUser));
+  }
+))
   
   const generateTokenResponse = (user : any) => {
     const token = jwt.sign({
@@ -46,6 +72,4 @@ router.post("/login",async_handler(
 
 export default router;
 
-function asyncHandler(arg0: (req: any, res: any) => Promise<void>): import("express-serve-static-core").RequestHandler<{}, any, any, import("qs").ParsedQs, Record<string, any>> {
-    throw new Error("Function not implemented.");
-}
+
